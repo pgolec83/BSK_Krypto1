@@ -116,11 +116,11 @@ public class krypto1 extends Application {
         plainTextField.setPadding(new Insets(10, 10, 10, 10));
         HBox keyBox = new HBox();
         keyBox.setSpacing(10);
-        TextField key1 = new TextField();
-        TextField key2 = new TextField();
-        TextField key3 = new TextField();
-        TextField key4 = new TextField();
-        TextField key5 = new TextField();
+        TextField key1 = new TextField("3");
+        TextField key2 = new TextField("4");
+        TextField key3 = new TextField("1");
+        TextField key4 = new TextField("5");
+        TextField key5 = new TextField("2");
         key1.setPadding(new Insets(10, 10, 10, 10));
         key2.setPadding(new Insets(10, 10, 10, 10));
         key3.setPadding(new Insets(10, 10, 10, 10));
@@ -187,7 +187,7 @@ public class krypto1 extends Application {
         Label cipherText = new Label(" - pusty - ");
         TextField plainTextField = new TextField();
         plainTextField.setPadding(new Insets(10,10,10,10));
-        TextField keyTextField = new TextField();
+        TextField keyTextField = new TextField("10");
         keyTextField.setPadding(new Insets(10,10,10,10));
         keyTextField.prefWidth(50);
         HBox keyBox = new HBox();
