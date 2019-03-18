@@ -1,10 +1,9 @@
 package app;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -14,12 +13,11 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class krypto1 extends Application {
-    private String mainTitle = "Wspaniały świat kryptografii";
+    private String mainTitle = "BSK - Kryptografia";
     // main - główne okno do wyświetlania zawartości
     FlowPane main;
     
@@ -146,7 +144,6 @@ public class krypto1 extends Application {
             key[3] = Integer.parseInt(key4.getText());
             key[4] = Integer.parseInt(key5.getText());
             String plainText = plainTextField.getText();
-            //plainText.replace(" ", "");
             plainText = plainText.replaceAll("\\s", "");
             String cipher = PrzestawianieMacierzowe(plainText, key);
             cipherText.setText(cipher);
@@ -184,11 +181,53 @@ public class krypto1 extends Application {
     }
     
     public void LayoutSzyfrCezara(){
-        
+        Label plainTextLabel = new Label("Wprowadź tekst w postaci jawnej do zaszyfrowania:");
+        Label keyLabel = new Label("Podaj klucz do szyfrowania (0-26):");
+        Label cipherTextLabel = new Label("Tekst w postaci zaszyfrowanej:");
+        Label cipherText = new Label(" - pusty - ");
+        TextField plainTextField = new TextField();
+        plainTextField.setPadding(new Insets(10,10,10,10));
+        TextField keyTextField = new TextField();
+        keyTextField.setPadding(new Insets(10,10,10,10));
+        keyTextField.prefWidth(50);
+        HBox keyBox = new HBox();
+        keyBox.setSpacing(10);
+        keyBox.setAlignment(Pos.CENTER_LEFT);
+        keyBox.getChildren().add(keyLabel);
+        keyBox.getChildren().add(keyTextField);
+        Button doCipher = new Button("Zaszyfruj");
+        doCipher.setOnAction( c -> {
+            String plainText = plainTextField.getText();
+            plainText = plainText.replaceAll("\\s", "");
+            int key = Integer.parseInt(keyTextField.getText());
+            String cipher = SzyfrCezara(plainText, key);
+            cipherText.setText(cipher);
+        });
+        main.setOrientation(Orientation.VERTICAL);
+        main.setVgap(10);
+        main.getChildren().add(plainTextLabel);
+        main.getChildren().add(plainTextField);
+        main.getChildren().add(keyBox);
+        main.getChildren().add(doCipher);
+        main.getChildren().add(cipherTextLabel);
+        main.getChildren().add(cipherText);
+       
     }
     
-    public void SzyfrCezara(){
-        
+    public String SzyfrCezara(String plainTextToCipher, int key){
+        char[] plainText = new char[plainTextToCipher.length()];
+        plainText = plainTextToCipher.toCharArray();
+        StringBuilder cipher = new StringBuilder();
+        for(int i=0;i<plainText.length;i++){
+            if(Character.isUpperCase(plainText[i])){
+                char znak = (char)(((int)plainText[i] + key - 65) % 26 + 65);
+                cipher.append(znak);
+            } else {
+                char znak = (char)(((int)plainText[i] + key - 97) % 26 + 97);
+                cipher.append(znak);
+            }
+        }
+        return cipher.toString();
     }
     
     public void LayoutSzyfrowanieVigenere(){
