@@ -99,9 +99,9 @@ public class krypto1 extends Application {
     }
     
     public void LayoutRailFence(){
-        Label plainTextLabel = new Label("Wprowadź tekst w postaci jawnej do zaszyfrowania:");
+        Label plainTextLabel = new Label("Wprowadź tekst do zaszyfrowania/odszyfrowania:");
         Label keyLabel = new Label("Podaj liczbę poziomów n:");
-        Label cipherTextLabel = new Label("Tekst w postaci zaszyfrowanej:");
+        Label cipherTextLabel = new Label("Tekst w postaci zaszyfrowanej/odszyfrowanej:");
         Label cipherText = new Label(" - pusty - ");
         TextField plainTextField = new TextField();
         plainTextField.setPadding(new Insets(10,10,10,10));
@@ -121,12 +121,22 @@ public class krypto1 extends Application {
             String cipher = RailFence(plainText, key);
             cipherText.setText(cipher);
         });
+        Button undoCipher = new Button("Odszyfruj");
+        undoCipher.setOnAction( c -> {
+            String plainText = plainTextField.getText();
+            plainText = plainText.replaceAll("\\s", "");
+            int key = Integer.parseInt(keyTextField.getText());
+            String cipher = unRailFence(plainText, key);
+            cipherText.setText(cipher);
+        });
+        keyBox.getChildren().add(doCipher);
+        keyBox.getChildren().add(undoCipher);
+        
         main.setOrientation(Orientation.VERTICAL);
         main.setVgap(10);
         main.getChildren().add(plainTextLabel);
         main.getChildren().add(plainTextField);
         main.getChildren().add(keyBox);
-        main.getChildren().add(doCipher);
         main.getChildren().add(cipherTextLabel);
         main.getChildren().add(cipherText);
         
@@ -154,6 +164,40 @@ public class krypto1 extends Application {
                     cipher.append(plainTable[i][j]);
         return cipher.toString();
     }
+    public String unRailFence(String plainTextToCipher, int key){
+        char[] plainText = new char[plainTextToCipher.length()];
+        plainText = plainTextToCipher.toCharArray();
+        char[][] plainTable = new char[key][plainText.length];
+        boolean goDown = false;
+        for(int i=0, j=0; j<plainText.length; j++) {
+            if(i==0 || i==key-1)
+                goDown = !goDown;
+            plainTable[i][j]= 32;
+            if(goDown)
+                i++;
+            else
+                i--;
+        }
+        
+        for(int i=0,k=0; i<key; i++)
+            for(int j=0; j<plainText.length; j++)
+                if(plainTable[i][j] == 32) 
+                    plainTable[i][j] = plainText[k++];
+                
+        StringBuilder cipher = new StringBuilder();
+        goDown = false;
+        for(int i=0, j=0; j<plainText.length; j++) {
+            if(i==0 || i==key-1)
+                goDown = !goDown;
+            cipher.append(plainTable[i][j]);
+            if(goDown)
+                i++;
+            else
+                i--;
+        }
+        return cipher.toString();
+    }
+    
     
     public void LayoutPrzestawianieMacierzowe() {
         int[] key = new int[5];
