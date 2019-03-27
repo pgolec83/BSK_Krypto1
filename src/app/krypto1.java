@@ -280,9 +280,9 @@ public class krypto1 extends Application {
     }
     
     public void LayoutSzyfrowanieVigenere(){
-        Label plainTextLabel = new Label("Wprowadź tekst w postaci jawnej do zaszyfrowania:");
-        Label keyLabel = new Label("Podaj klucz do szyfrowania:");
-        Label cipherTextLabel = new Label("Tekst w postaci zaszyfrowanej:");
+        Label plainTextLabel = new Label("Wprowadź tekst do zaszyfrowania/odszyfrowania:");
+        Label keyLabel = new Label("Podaj klucz do szyfrowania/odszyfrowania:");
+        Label cipherTextLabel = new Label("Tekst w postaci zaszyfrowanej/odszyfrowanej:");
         Label cipherText = new Label(" - pusty - ");
         TextField plainTextField = new TextField();
         plainTextField.setPadding(new Insets(10,10,10,10));
@@ -297,13 +297,27 @@ public class krypto1 extends Application {
             String cipher = SzyfrowanieVigenere(plainText, key);
             cipherText.setText(cipher);
         });
+        Button undoCipher = new Button("Odszyfruj");
+        undoCipher.setOnAction( c -> {
+            String plainText = plainTextField.getText();
+            plainText = plainText.replaceAll("\\s", "");
+            String key = keyTextField.getText();
+            String cipher = OdszyfrowanieVigenere(plainText, key);
+            cipherText.setText(cipher);
+        });
+        HBox keyBox = new HBox();
+        keyBox.setSpacing(10);
+        keyBox.setAlignment(Pos.CENTER_LEFT);
+        keyBox.getChildren().add(doCipher);
+        keyBox.getChildren().add(undoCipher);
+        
         main.setOrientation(Orientation.VERTICAL);
         main.setVgap(10);
         main.getChildren().add(plainTextLabel);
         main.getChildren().add(plainTextField);
         main.getChildren().add(keyLabel);
         main.getChildren().add(keyTextField);
-        main.getChildren().add(doCipher);
+        main.getChildren().add(keyBox);
         main.getChildren().add(cipherTextLabel);
         main.getChildren().add(cipherText);
        
@@ -319,6 +333,24 @@ public class krypto1 extends Application {
                 cipher.append(znak);
             } else {
                 char znak = (char)(((int)plainText[i] + Character.toLowerCase(key.charAt(j)) - 2 * 'a') % 26 + 'a');
+                cipher.append(znak);
+            }
+            j = ++j % key.length();
+        }
+        return cipher.toString();    
+        
+    }
+    
+    public String OdszyfrowanieVigenere(String plainTextToCipher, String key){
+        char[] plainText = new char[plainTextToCipher.length()];
+        plainText = plainTextToCipher.toCharArray();
+        StringBuilder cipher = new StringBuilder();
+        for(int i=0, j=0; i<plainText.length; i++){
+            if(Character.isUpperCase(plainText[i])){
+                char znak = (char)(((int)plainText[i] - Character.toUpperCase(key.charAt(j)) + 26) % 26 + 'A');
+                cipher.append(znak);
+            } else {
+                char znak = (char)(((int)plainText[i] - Character.toLowerCase(key.charAt(j)) + 26) % 26 + 'a');
                 cipher.append(znak);
             }
             j = ++j % key.length();
