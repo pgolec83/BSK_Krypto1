@@ -280,10 +280,50 @@ public class krypto1 extends Application {
     }
     
     public void LayoutSzyfrowanieVigenere(){
-        
+        Label plainTextLabel = new Label("Wprowadź tekst w postaci jawnej do zaszyfrowania:");
+        Label keyLabel = new Label("Podaj klucz do szyfrowania:");
+        Label cipherTextLabel = new Label("Tekst w postaci zaszyfrowanej:");
+        Label cipherText = new Label(" - pusty - ");
+        TextField plainTextField = new TextField();
+        plainTextField.setPadding(new Insets(10,10,10,10));
+        TextField keyTextField = new TextField();
+        keyTextField.setPadding(new Insets(10,10,10,10));
+        keyTextField.prefWidth(50);
+        Button doCipher = new Button("Zaszyfruj");
+        doCipher.setOnAction( c -> {
+            String plainText = plainTextField.getText();
+            plainText = plainText.replaceAll("\\s", "");
+            String key = keyTextField.getText();
+            String cipher = SzyfrowanieVigenere(plainText, key);
+            cipherText.setText(cipher);
+        });
+        main.setOrientation(Orientation.VERTICAL);
+        main.setVgap(10);
+        main.getChildren().add(plainTextLabel);
+        main.getChildren().add(plainTextField);
+        main.getChildren().add(keyLabel);
+        main.getChildren().add(keyTextField);
+        main.getChildren().add(doCipher);
+        main.getChildren().add(cipherTextLabel);
+        main.getChildren().add(cipherText);
+       
     }
     
-    public void SzyfrowanieVigenere(){
+    public String SzyfrowanieVigenere(String plainTextToCipher, String key){
+        char[] plainText = new char[plainTextToCipher.length()];
+        plainText = plainTextToCipher.toCharArray();
+        StringBuilder cipher = new StringBuilder();
+        for(int i=0, j=0; i<plainText.length; i++){
+            if(Character.isUpperCase(plainText[i])){
+                char znak = (char)(((int)plainText[i] + Character.toUpperCase(key.charAt(j)) - 2 * 'A') % 26 + 'A');
+                cipher.append(znak);
+            } else {
+                char znak = (char)(((int)plainText[i] + Character.toLowerCase(key.charAt(j)) - 2 * 'a') % 26 + 'a');
+                cipher.append(znak);
+            }
+            j = ++j % key.length();
+        }
+        return cipher.toString();    
         
     }
 }
