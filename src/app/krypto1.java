@@ -201,9 +201,9 @@ public class krypto1 extends Application {
     
     public void LayoutPrzestawianieMacierzowe() {
         int[] key = new int[5];
-        Label plainTextLabel = new Label("Wprowadź tekst w postaci jawnej do zaszyfrowania:");
-        Label keyLabel = new Label("Podaj klucz do zaszyfrowania dla d = 5");
-        Label cipherLabel = new Label("Tekst w postacji zaszyfrowanej:");
+        Label plainTextLabel = new Label("Wprowadź tekst do zaszyfrowania / rozszyfrowania:");
+        Label keyLabel = new Label("Podaj klucz do zaszyfrowania / rozszyfrowania (dla d = 5)");
+        Label cipherLabel = new Label("Tekst zaszyfrowany / odszyfrowany:");
         Label cipherText = new Label(" - pusty -");
         TextField plainTextField = new TextField();
         plainTextField.setPadding(new Insets(10, 10, 10, 10));
@@ -230,6 +230,7 @@ public class krypto1 extends Application {
         keyBox.getChildren().add(key4);
         keyBox.getChildren().add(key5);
         Button doCipher = new Button("Zaszyfruj");
+        Button deCipher = new Button("Rozszyfruj");
         doCipher.setOnAction(c -> {
             key[0] = Integer.parseInt(key1.getText());
             key[1] = Integer.parseInt(key2.getText());
@@ -241,6 +242,17 @@ public class krypto1 extends Application {
             String cipher = PrzestawianieMacierzowe(plainText, key);
             cipherText.setText(cipher);
         });
+        deCipher.setOnAction(c -> {
+            key[0] = Integer.parseInt(key1.getText());
+            key[1] = Integer.parseInt(key2.getText());
+            key[2] = Integer.parseInt(key3.getText());
+            key[3] = Integer.parseInt(key4.getText());
+            key[4] = Integer.parseInt(key5.getText());
+            String deCipherText = plainTextField.getText();
+            deCipherText = deCipherText.replaceAll("\\s", "");
+            String plain = unPrzestawianieMacierzowe(deCipherText, key);
+            cipherText.setText(plain);
+        });
         main.setOrientation(Orientation.VERTICAL);
         main.setVgap(10);
         main.getChildren().add(plainTextLabel);
@@ -248,6 +260,7 @@ public class krypto1 extends Application {
         main.getChildren().add(keyLabel);
         main.getChildren().add(keyBox);
         main.getChildren().add(doCipher);
+        main.getChildren().add(deCipher);
         main.getChildren().add(cipherLabel);
         main.getChildren().add(cipherText);
     }
@@ -255,28 +268,51 @@ public class krypto1 extends Application {
     public String PrzestawianieMacierzowe(String plainTextToCipher, int[] key){
         char[] plainText = new char[plainTextToCipher.length()];
         plainText = plainTextToCipher.toCharArray();
-        double floor = Math.floor(plainText.length / 5);
-        char[][] plainTable = new char[5][(int)floor+1];     
-        for(int y=0;y<=floor;y++){
+        double range = Math.floor(plainText.length / 5) + 1;
+        char[][] plainTable = new char[5][(int)range];     
+        for(int y=0;y<range;y++){
             for(int x=0;x<5;x++){
-                if((y*5)+(x) == plainText.length) break;
-                plainTable[x][y] = plainText[(y*5)+(x)];
+                if(!((y*5)+(x) >= plainText.length)) {
+                    plainTable[x][y] = plainText[(y*5)+(x)];
+                }    
             }
         }
         StringBuilder cipher = new StringBuilder();
-        for(int y=0;y<=floor;y++){
+        for(int y=0;y<range;y++){
             for(int x=0;x<5;x++){
-                if((y*5)+(x) == plainText.length) break;
                 cipher.append(plainTable[key[x]-1][y]);
+   
             }
         }
         return cipher.toString();
     }
     
+    public String unPrzestawianieMacierzowe(String cipherTextToDecipher, int[] key){
+        char[] cipherText = new char[cipherTextToDecipher.length()];
+        cipherText = cipherTextToDecipher.toCharArray();
+        double range = Math.floor(cipherText.length / 5) + 1;
+        char[][] cipherTable = new char[5][(int)range];
+        for(int y=0;y<range;y++){
+            for(int x=0;x<5;x++){
+                if(!((y*5)+(x) >= cipherText.length)) 
+                cipherTable[(key[x]-1)][y] = cipherText[(y*5)+x];
+            }
+        }
+        StringBuilder plainText = new StringBuilder();
+        for(int y=0;y<range;y++){
+            for(int x=0;x<5;x++){
+                //if((y*5)+(x) == cipherText.length) break;
+                plainText.append(cipherTable[x][y]);
+            }
+        }
+        return plainText.toString();
+    }
+
+    
     public void LayoutSzyfrCezara(){
-        Label plainTextLabel = new Label("Wprowadź tekst w postaci jawnej do zaszyfrowania:");
-        Label keyLabel = new Label("Podaj klucz do szyfrowania (0-26):");
-        Label cipherTextLabel = new Label("Tekst w postaci zaszyfrowanej:");
+        Label plainTextLabel = new Label("Wprowadź tekst w do zaszyfrowania / odszyfrowania:");
+        Label keyLabel = new Label("Podaj klucz do szyfrowania / odszyfrowania (0-26):");
+        Label cipherTextLabel = new Label("Tekst zaszyfrowany / odszyfrowany:");
         Label cipherText = new Label(" - pusty - ");
         TextField plainTextField = new TextField();
         plainTextField.setPadding(new Insets(10,10,10,10));
@@ -289,11 +325,19 @@ public class krypto1 extends Application {
         keyBox.getChildren().add(keyLabel);
         keyBox.getChildren().add(keyTextField);
         Button doCipher = new Button("Zaszyfruj");
+        Button deCipher = new Button("Odszyfruj");
         doCipher.setOnAction( c -> {
             String plainText = plainTextField.getText();
             plainText = plainText.replaceAll("\\s", "");
             int key = Integer.parseInt(keyTextField.getText());
             String cipher = SzyfrCezara(plainText, key);
+            cipherText.setText(cipher);
+        });
+        deCipher.setOnAction( c -> {
+            String deCipherText = plainTextField.getText();
+            deCipherText = deCipherText.replaceAll("\\s", "");
+            int key = Integer.parseInt(keyTextField.getText());
+            String cipher = unSzyfrCezara(deCipherText, key);
             cipherText.setText(cipher);
         });
         main.setOrientation(Orientation.VERTICAL);
@@ -302,6 +346,7 @@ public class krypto1 extends Application {
         main.getChildren().add(plainTextField);
         main.getChildren().add(keyBox);
         main.getChildren().add(doCipher);
+        main.getChildren().add(deCipher);
         main.getChildren().add(cipherTextLabel);
         main.getChildren().add(cipherText);
        
@@ -321,6 +366,25 @@ public class krypto1 extends Application {
             }
         }
         return cipher.toString();
+    }
+    
+    //char ch = (char)(((int)text.charAt(i) + s - 65) % 26 + 65); 
+    
+    public String unSzyfrCezara(String cipherTextToDeCipher, int key){
+        char[] cipherText = new char[cipherTextToDeCipher.length()];
+        cipherText = cipherTextToDeCipher.toCharArray();
+        StringBuilder plain = new StringBuilder();
+        key = 26-key;
+        for(int i=0;i<cipherText.length;i++){
+            if(Character.isUpperCase(cipherText[i])){
+                char znak = (char)(((int)cipherText[i] + key - 65) % 26 + 65);
+                plain.append(znak);
+            } else {
+                char znak = (char)(((int)cipherText[i] + key - 97) % 26 + 97);
+                plain.append(znak);
+            }
+        }
+        return plain.toString();
     }
     
     public void LayoutSzyfrowanieVigenere(){
