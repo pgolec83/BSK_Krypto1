@@ -143,6 +143,7 @@ public class krypto1 extends Application {
     }
     
     public String RailFence(String plainTextToCipher, int key){
+        @SuppressWarnings("UnusedAssignment")
         char[] plainText = new char[plainTextToCipher.length()];
         plainText = plainTextToCipher.toCharArray();
         char[][] plainTable = new char[key][plainText.length];
@@ -301,7 +302,6 @@ public class krypto1 extends Application {
         StringBuilder plainText = new StringBuilder();
         for(int y=0;y<range;y++){
             for(int x=0;x<5;x++){
-                //if((y*5)+(x) == cipherText.length) break;
                 plainText.append(cipherTable[x][y]);
             }
         }
@@ -367,8 +367,6 @@ public class krypto1 extends Application {
         }
         return cipher.toString();
     }
-    
-    //char ch = (char)(((int)text.charAt(i) + s - 65) % 26 + 65); 
     
     public String unSzyfrCezara(String cipherTextToDeCipher, int key){
         char[] cipherText = new char[cipherTextToDeCipher.length()];
