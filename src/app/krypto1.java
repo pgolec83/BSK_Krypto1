@@ -129,6 +129,10 @@ public class krypto1 extends Application {
             String cipher = unRailFence(plainText, key);
             cipherText.setText(cipher);
         });
+        Button copy = new Button("Skopiuj wynik");
+        copy.setOnAction(k -> {
+            plainTextField.setText(cipherText.getText());
+        });
         keyBox.getChildren().add(doCipher);
         keyBox.getChildren().add(undoCipher);
         
@@ -139,7 +143,7 @@ public class krypto1 extends Application {
         main.getChildren().add(keyBox);
         main.getChildren().add(cipherTextLabel);
         main.getChildren().add(cipherText);
-        
+        main.getChildren().add(copy);
     }
     
     public String RailFence(String plainTextToCipher, int key){
@@ -254,6 +258,10 @@ public class krypto1 extends Application {
             String plain = unPrzestawianieMacierzowe(deCipherText, key);
             cipherText.setText(plain);
         });
+        Button copy = new Button("Skopiuj wynik");
+        copy.setOnAction(k -> {
+            plainTextField.setText(cipherText.getText());
+        });
         main.setOrientation(Orientation.VERTICAL);
         main.setVgap(10);
         main.getChildren().add(plainTextLabel);
@@ -264,6 +272,7 @@ public class krypto1 extends Application {
         main.getChildren().add(deCipher);
         main.getChildren().add(cipherLabel);
         main.getChildren().add(cipherText);
+        main.getChildren().add(copy);
     }
     
     public String PrzestawianieMacierzowe(String plainTextToCipher, int[] key){
@@ -340,6 +349,10 @@ public class krypto1 extends Application {
             String cipher = unSzyfrCezara(deCipherText, key);
             cipherText.setText(cipher);
         });
+        Button copy = new Button("Skopiuj wynik");
+        copy.setOnAction(k -> {
+            plainTextField.setText(cipherText.getText());
+        });
         main.setOrientation(Orientation.VERTICAL);
         main.setVgap(10);
         main.getChildren().add(plainTextLabel);
@@ -349,7 +362,7 @@ public class krypto1 extends Application {
         main.getChildren().add(deCipher);
         main.getChildren().add(cipherTextLabel);
         main.getChildren().add(cipherText);
-       
+        main.getChildren().add(copy);
     }
     
     public String SzyfrCezara(String plainTextToCipher, int key){
@@ -411,6 +424,10 @@ public class krypto1 extends Application {
             String cipher = OdszyfrowanieVigenere(plainText, key);
             cipherText.setText(cipher);
         });
+        Button copy = new Button("Skopiuj wynik");
+        copy.setOnAction(k -> {
+            plainTextField.setText(cipherText.getText());
+        });
         HBox keyBox = new HBox();
         keyBox.setSpacing(10);
         keyBox.setAlignment(Pos.CENTER_LEFT);
@@ -426,7 +443,7 @@ public class krypto1 extends Application {
         main.getChildren().add(keyBox);
         main.getChildren().add(cipherTextLabel);
         main.getChildren().add(cipherText);
-       
+        main.getChildren().add(copy);
     }
     
     public String SzyfrowanieVigenere(String plainTextToCipher, String key){
