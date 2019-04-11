@@ -525,6 +525,7 @@ public class krypto1 extends Application {
         Label polynomialText = new Label("");
         Label seedText = new Label("");
         Label resultText = new Label("");
+        Label fileNameText = new Label("");
         TextField plainTextField = new TextField();
         plainTextField.setPadding(new Insets(10,10,10,10));
         TextField keyTextField = new TextField();
@@ -549,6 +550,10 @@ public class krypto1 extends Application {
                     File file = fileChooser.showOpenDialog(stage);
                     if (file != null) {
                         pathText.setText(file.getPath());
+                        resultText.setText("");
+                        seedText.setText("");
+                        fileNameText.setText("");
+                        polynomialText.setText("");
                     }
                 }
             });
@@ -568,6 +573,8 @@ public class krypto1 extends Application {
                 resultText.setText("Szyfrowanie zakończone");
                 polynomialText.setText(sb.toString());
                 seedText.setText("Ziarno: "+keyTextField.getText());
+                Path path = Paths.get(pathText.getText());
+                fileNameText.setText("Plik wynikowy: "+path.getParent()+"/tajnyplik"+getFileExtension(path));
             }
             else
                 resultText.setText("Szyfrowanie zakończone niepowodzeniem");
@@ -590,6 +597,7 @@ public class krypto1 extends Application {
         main.getChildren().add(pathText);
         main.getChildren().add(polynomialText);
         main.getChildren().add(seedText);
+        main.getChildren().add(fileNameText);
 
     }
    
