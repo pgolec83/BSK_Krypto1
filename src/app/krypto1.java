@@ -1,9 +1,29 @@
 package app;
 
+import static java.awt.SystemColor.desktop;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -14,7 +34,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public class krypto1 extends Application {
     private String mainTitle = "BSK - Kryptografia";
@@ -69,10 +91,23 @@ public class krypto1 extends Application {
             // tworzenie layoutu do zadania
             LayoutSzyfrowanieVigenere();
         });
+        MenuItem menuitem5 = new MenuItem("Szyfrowanie strumieniowe");
+        // akcja po wybraniu elementu 5 menu
+        menuitem5.setOnAction( e -> {
+            primaryStage.setTitle(mainTitle + " - Szyfrowanie strumieniowe");
+            if(!main.getChildren().isEmpty()){
+                main.getChildren().clear();
+            }
+            // tworzenie layoutu do zadania
+            LayoutSzyfrowanieStrumieniowe();
+        });
+        
+        
         menu1.getItems().add(menuitem1);
         menu1.getItems().add(menuitem2);
         menu1.getItems().add(menuitem3);
         menu1.getItems().add(menuitem4);
+        menu2.getItems().add(menuitem5);
         menubar.getMenus().add(menu1);
         menubar.getMenus().add(menu2);
         
@@ -481,4 +516,134 @@ public class krypto1 extends Application {
         return cipher.toString();    
         
     }
+    
+    public void LayoutSzyfrowanieStrumieniowe() {
+        Label plainTextLabel = new Label("Podaj potęgi wielomianu 1+x+x^2+...+x^n");
+        Label keyLabel = new Label("Podaj ziarno (binarnie):");
+        Label cipherText = new Label("Plik do zaszyfrowania:");
+        Label pathText = new Label("");
+        Label polynomialText = new Label("");
+        Label seedText = new Label("");
+        Label resultText = new Label("");
+        TextField plainTextField = new TextField();
+        plainTextField.setPadding(new Insets(10,10,10,10));
+        TextField keyTextField = new TextField();
+        keyTextField.setPadding(new Insets(10,10,10,10));
+        keyTextField.prefWidth(50);
+        
+        plainTextField.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+                plainTextField.setText(newValue.replaceAll("[^\\d^\\s]", ""));
+        });
+        keyTextField.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+                keyTextField.setText(newValue.replaceAll("[^0-1]", ""));
+        });
+                     
+        Button openButton = new Button("Wybierz plik");
+        final FileChooser fileChooser = new FileChooser();
+        openButton.setOnAction(
+            new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(final ActionEvent e) {
+                    Node node = (Node) e.getSource();
+                    final Stage stage = (Stage) node.getScene().getWindow();
+                    File file = fileChooser.showOpenDialog(stage);
+                    if (file != null) {
+                        pathText.setText(file.getPath());
+                    }
+                }
+            });
+        Button doCipher = new Button("Szyfruj");
+        
+        doCipher.setOnAction( c -> {
+            String[] stringOfNumbers = plainTextField.getText().split("\\s");
+            StringBuilder sb = new StringBuilder();
+            Set<Integer> polynomials = new HashSet<Integer>();
+            for(String s: stringOfNumbers)
+                polynomials.add(Integer.parseInt(s));
+            polynomials.remove(0);
+            sb.append("Wielomian: 1");
+            for(int i: polynomials)
+                sb.append("+x^"+i);         
+            if(SzyfrowanieStrumieniowe(pathText.getText(), polynomials, Integer.parseInt(keyTextField.getText()))==0) {
+                resultText.setText("Szyfrowanie zakończone");
+                polynomialText.setText(sb.toString());
+                seedText.setText("Ziarno: "+keyTextField.getText());
+            }
+            else
+                resultText.setText("Szyfrowanie zakończone niepowodzeniem");
+        });
+        HBox keyBox = new HBox();
+        keyBox.setSpacing(10);
+        keyBox.setAlignment(Pos.CENTER_LEFT);
+        keyBox.getChildren().add(openButton);
+        keyBox.getChildren().add(doCipher);
+        
+        main.setOrientation(Orientation.VERTICAL);
+        main.setVgap(10);
+        main.getChildren().add(plainTextLabel);
+        main.getChildren().add(plainTextField);
+        main.getChildren().add(keyLabel);
+        main.getChildren().add(keyTextField);
+        main.getChildren().add(keyBox);
+        main.getChildren().add(resultText);
+        main.getChildren().add(cipherText);
+        main.getChildren().add(pathText);
+        main.getChildren().add(polynomialText);
+        main.getChildren().add(seedText);
+
+    }
+   
+    public int SzyfrowanieStrumieniowe(String stringPath, Set<Integer> polynomial, int seed) {
+        Path path = Paths.get(stringPath);
+        try {
+            byte byteArray[] = Files.readAllBytes(path);                //wczytanie pliku jako tablicy bajtów
+            BitSet polynomialBitSet = new BitSet();
+            BitSet seedBitSet = convert(seed);
+            int max = 0;
+            for(int i: polynomial) {
+                if(i>max)
+                    max = i;
+            }
+            for(int i: polynomial) {
+                polynomialBitSet.set(max-i);
+            }
+            LFSR lfsr = new LFSR(seedBitSet,polynomialBitSet);
+
+            for(int i=0; i<byteArray.length; i++)
+                byteArray[i]^=lfsr.getNextByte();
+            FileOutputStream fos = new FileOutputStream(path.getParent()+"/tajnyplik"+getFileExtension(path));
+            fos.write(byteArray);            
+            
+        } catch (IOException ex) {
+            return -1;
+        }
+        return 0;
+    }
+    
+    public static BitSet convert(int value) {
+    BitSet bits = new BitSet();
+    int index = 0;
+    while (value != 0) {
+      if (value % 10 != 0) {
+        bits.set(index);
+      }
+      ++index;
+      value/= 10;
+    }
+    return bits;
+  }
+    
+    
+
+    private String getFileExtension(Path path) {
+        String name = path.getFileName().toString();
+        int lastIndexOf = name.lastIndexOf(".");
+        if (lastIndexOf == -1) {
+            return ""; 
+        }
+    return name.substring(lastIndexOf);
+}
+
+
+    
 }
