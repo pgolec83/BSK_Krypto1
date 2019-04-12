@@ -1,22 +1,15 @@
 package app;
 
-import static java.awt.SystemColor.desktop;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.BitSet;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.TreeSet;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -36,36 +29,36 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
 public class krypto1 extends Application {
+
     private String mainTitle = "BSK - Kryptografia";
     // main - główne okno do wyświetlania zawartości
     FlowPane main;
-    
+
     @Override
     public void start(Stage primaryStage) {
-        
+
         // inicjalizacja menu aplikacji
         MenuBar menubar = new MenuBar();
         Menu menu1 = new Menu("PS2");
         Menu menu2 = new Menu("PS3");
         MenuItem menuitem1 = new MenuItem("Rail fence");
         // akcja po wybraniu elementu 1 menu
-        menuitem1.setOnAction( e -> {
-           primaryStage.setTitle(mainTitle + " - Rail fence");
-           if(!main.getChildren().isEmpty()){
+        menuitem1.setOnAction(e -> {
+            primaryStage.setTitle(mainTitle + " - Rail fence");
+            if (!main.getChildren().isEmpty()) {
                 main.getChildren().clear();
-           }
-           // tworzenie layoutu do zadania
-           LayoutRailFence();
+            }
+            // tworzenie layoutu do zadania
+            LayoutRailFence();
         });
         MenuItem menuitem2 = new MenuItem("Przestawianie macierzowe");
         // akcja po wybraniu elementu 2 menu
-        menuitem2.setOnAction( e -> {
+        menuitem2.setOnAction(e -> {
             primaryStage.setTitle(mainTitle + " - Przestawianie macierzowe");
             // czyszczenie okna
-            if(!main.getChildren().isEmpty()){
+            if (!main.getChildren().isEmpty()) {
                 main.getChildren().clear();
             }
             // tworzenie layoutu do zadania
@@ -73,19 +66,19 @@ public class krypto1 extends Application {
         });
         MenuItem menuitem3 = new MenuItem("Szyfrowanie Cezara");
         // akcja po wybraniu elementu 3 menu
-        menuitem3.setOnAction( e -> {
+        menuitem3.setOnAction(e -> {
             primaryStage.setTitle(mainTitle + " - Szyfrowanie Cezara");
-            if(!main.getChildren().isEmpty()){
+            if (!main.getChildren().isEmpty()) {
                 main.getChildren().clear();
-            }      
+            }
             // tworzenie layoutu do zadania
             LayoutSzyfrCezara();
         });
         MenuItem menuitem4 = new MenuItem("Szyfrowanie Vigenere'a");
         // akcja po wybraniu elementu 4 menu
-        menuitem4.setOnAction( e -> {
+        menuitem4.setOnAction(e -> {
             primaryStage.setTitle(mainTitle + " - Szyfrowanie Vigenere'a");
-            if(!main.getChildren().isEmpty()){
+            if (!main.getChildren().isEmpty()) {
                 main.getChildren().clear();
             }
             // tworzenie layoutu do zadania
@@ -93,16 +86,15 @@ public class krypto1 extends Application {
         });
         MenuItem menuitem5 = new MenuItem("Szyfrowanie strumieniowe");
         // akcja po wybraniu elementu 5 menu
-        menuitem5.setOnAction( e -> {
+        menuitem5.setOnAction(e -> {
             primaryStage.setTitle(mainTitle + " - Szyfrowanie strumieniowe");
-            if(!main.getChildren().isEmpty()){
+            if (!main.getChildren().isEmpty()) {
                 main.getChildren().clear();
             }
             // tworzenie layoutu do zadania
             LayoutSzyfrowanieStrumieniowe();
         });
-        
-        
+
         menu1.getItems().add(menuitem1);
         menu1.getItems().add(menuitem2);
         menu1.getItems().add(menuitem3);
@@ -110,17 +102,17 @@ public class krypto1 extends Application {
         menu2.getItems().add(menuitem5);
         menubar.getMenus().add(menu1);
         menubar.getMenus().add(menu2);
-        
+
         // główny layout aplikacji z implementacją menu
         VBox root = new VBox(menubar);
-        
+
         // main - główne okno do wyświetlania zawartości
         main = new FlowPane();
         main.setPadding(new Insets(20, 20, 20, 20));
         root.getChildren().add(main);
-        
+
         // tworzenie okna aplikacji
-        Scene scene = new Scene(root, 600, 400);   
+        Scene scene = new Scene(root, 600, 400);
         primaryStage.setTitle(mainTitle);
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -132,16 +124,16 @@ public class krypto1 extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-    
-    public void LayoutRailFence(){
+
+    public void LayoutRailFence() {
         Label plainTextLabel = new Label("Wprowadź tekst do zaszyfrowania/odszyfrowania:");
         Label keyLabel = new Label("Podaj liczbę poziomów n:");
         Label cipherTextLabel = new Label("Tekst w postaci zaszyfrowanej/odszyfrowanej:");
         Label cipherText = new Label(" - pusty - ");
         TextField plainTextField = new TextField();
-        plainTextField.setPadding(new Insets(10,10,10,10));
+        plainTextField.setPadding(new Insets(10, 10, 10, 10));
         TextField keyTextField = new TextField("3");
-        keyTextField.setPadding(new Insets(10,10,10,10));
+        keyTextField.setPadding(new Insets(10, 10, 10, 10));
         keyTextField.prefWidth(50);
         HBox keyBox = new HBox();
         keyBox.setSpacing(10);
@@ -149,7 +141,7 @@ public class krypto1 extends Application {
         keyBox.getChildren().add(keyLabel);
         keyBox.getChildren().add(keyTextField);
         Button doCipher = new Button("Zaszyfruj");
-        doCipher.setOnAction( c -> {
+        doCipher.setOnAction(c -> {
             String plainText = plainTextField.getText();
             plainText = plainText.replaceAll("\\s", "");
             int key = Integer.parseInt(keyTextField.getText());
@@ -157,7 +149,7 @@ public class krypto1 extends Application {
             cipherText.setText(cipher);
         });
         Button undoCipher = new Button("Odszyfruj");
-        undoCipher.setOnAction( c -> {
+        undoCipher.setOnAction(c -> {
             String plainText = plainTextField.getText();
             plainText = plainText.replaceAll("\\s", "");
             int key = Integer.parseInt(keyTextField.getText());
@@ -170,7 +162,7 @@ public class krypto1 extends Application {
         });
         keyBox.getChildren().add(doCipher);
         keyBox.getChildren().add(undoCipher);
-        
+
         main.setOrientation(Orientation.VERTICAL);
         main.setVgap(10);
         main.getChildren().add(plainTextLabel);
@@ -180,65 +172,77 @@ public class krypto1 extends Application {
         main.getChildren().add(cipherText);
         main.getChildren().add(copy);
     }
-    
-    public String RailFence(String plainTextToCipher, int key){
+
+    public String RailFence(String plainTextToCipher, int key) {
         @SuppressWarnings("UnusedAssignment")
         char[] plainText = new char[plainTextToCipher.length()];
         plainText = plainTextToCipher.toCharArray();
         char[][] plainTable = new char[key][plainText.length];
         boolean goDown = false;
-        for(int i=0, j=0; j<plainText.length; j++) {
-            if(i==0 || i==key-1)
+        for (int i = 0, j = 0; j < plainText.length; j++) {
+            if (i == 0 || i == key - 1) {
                 goDown = !goDown;
-            plainTable[i][j]=plainText[j];
-            if(goDown)
+            }
+            plainTable[i][j] = plainText[j];
+            if (goDown) {
                 i++;
-            else
+            } else {
                 i--;
+            }
         }
-        
+
         StringBuilder cipher = new StringBuilder();
-        for(int i=0; i<key; i++)
-            for(int j=0; j<plainText.length; j++)
-                if(plainTable[i][j]!=0)
+        for (int i = 0; i < key; i++) {
+            for (int j = 0; j < plainText.length; j++) {
+                if (plainTable[i][j] != 0) {
                     cipher.append(plainTable[i][j]);
+                }
+            }
+        }
         return cipher.toString();
     }
-    public String unRailFence(String plainTextToCipher, int key){
+
+    public String unRailFence(String plainTextToCipher, int key) {
         char[] plainText = new char[plainTextToCipher.length()];
         plainText = plainTextToCipher.toCharArray();
         char[][] plainTable = new char[key][plainText.length];
         boolean goDown = false;
-        for(int i=0, j=0; j<plainText.length; j++) {
-            if(i==0 || i==key-1)
+        for (int i = 0, j = 0; j < plainText.length; j++) {
+            if (i == 0 || i == key - 1) {
                 goDown = !goDown;
-            plainTable[i][j]= 32;
-            if(goDown)
+            }
+            plainTable[i][j] = 32;
+            if (goDown) {
                 i++;
-            else
+            } else {
                 i--;
+            }
         }
-        
-        for(int i=0,k=0; i<key; i++)
-            for(int j=0; j<plainText.length; j++)
-                if(plainTable[i][j] == 32) 
+
+        for (int i = 0, k = 0; i < key; i++) {
+            for (int j = 0; j < plainText.length; j++) {
+                if (plainTable[i][j] == 32) {
                     plainTable[i][j] = plainText[k++];
-                
+                }
+            }
+        }
+
         StringBuilder cipher = new StringBuilder();
         goDown = false;
-        for(int i=0, j=0; j<plainText.length; j++) {
-            if(i==0 || i==key-1)
+        for (int i = 0, j = 0; j < plainText.length; j++) {
+            if (i == 0 || i == key - 1) {
                 goDown = !goDown;
+            }
             cipher.append(plainTable[i][j]);
-            if(goDown)
+            if (goDown) {
                 i++;
-            else
+            } else {
                 i--;
+            }
         }
         return cipher.toString();
     }
-    
-    
+
     public void LayoutPrzestawianieMacierzowe() {
         int[] key = new int[5];
         Label plainTextLabel = new Label("Wprowadź tekst do zaszyfrowania / rozszyfrowania:");
@@ -309,59 +313,59 @@ public class krypto1 extends Application {
         main.getChildren().add(cipherText);
         main.getChildren().add(copy);
     }
-    
-    public String PrzestawianieMacierzowe(String plainTextToCipher, int[] key){
+
+    public String PrzestawianieMacierzowe(String plainTextToCipher, int[] key) {
         char[] plainText = new char[plainTextToCipher.length()];
         plainText = plainTextToCipher.toCharArray();
         double range = Math.floor(plainText.length / 5) + 1;
-        char[][] plainTable = new char[5][(int)range];     
-        for(int y=0;y<range;y++){
-            for(int x=0;x<5;x++){
-                if(!((y*5)+(x) >= plainText.length)) {
-                    plainTable[x][y] = plainText[(y*5)+(x)];
-                }    
+        char[][] plainTable = new char[5][(int) range];
+        for (int y = 0; y < range; y++) {
+            for (int x = 0; x < 5; x++) {
+                if (!((y * 5) + (x) >= plainText.length)) {
+                    plainTable[x][y] = plainText[(y * 5) + (x)];
+                }
             }
         }
         StringBuilder cipher = new StringBuilder();
-        for(int y=0;y<range;y++){
-            for(int x=0;x<5;x++){
-                cipher.append(plainTable[key[x]-1][y]);
-   
+        for (int y = 0; y < range; y++) {
+            for (int x = 0; x < 5; x++) {
+                cipher.append(plainTable[key[x] - 1][y]);
+
             }
         }
         return cipher.toString();
     }
-    
-    public String unPrzestawianieMacierzowe(String cipherTextToDecipher, int[] key){
+
+    public String unPrzestawianieMacierzowe(String cipherTextToDecipher, int[] key) {
         char[] cipherText = new char[cipherTextToDecipher.length()];
         cipherText = cipherTextToDecipher.toCharArray();
         double range = Math.floor(cipherText.length / 5) + 1;
-        char[][] cipherTable = new char[5][(int)range];
-        for(int y=0;y<range;y++){
-            for(int x=0;x<5;x++){
-                if(!((y*5)+(x) >= cipherText.length)) 
-                cipherTable[(key[x]-1)][y] = cipherText[(y*5)+x];
+        char[][] cipherTable = new char[5][(int) range];
+        for (int y = 0; y < range; y++) {
+            for (int x = 0; x < 5; x++) {
+                if (!((y * 5) + (x) >= cipherText.length)) {
+                    cipherTable[(key[x] - 1)][y] = cipherText[(y * 5) + x];
+                }
             }
         }
         StringBuilder plainText = new StringBuilder();
-        for(int y=0;y<range;y++){
-            for(int x=0;x<5;x++){
+        for (int y = 0; y < range; y++) {
+            for (int x = 0; x < 5; x++) {
                 plainText.append(cipherTable[x][y]);
             }
         }
         return plainText.toString();
     }
 
-    
-    public void LayoutSzyfrCezara(){
+    public void LayoutSzyfrCezara() {
         Label plainTextLabel = new Label("Wprowadź tekst w do zaszyfrowania / odszyfrowania:");
         Label keyLabel = new Label("Podaj klucz do szyfrowania / odszyfrowania (0-26):");
         Label cipherTextLabel = new Label("Tekst zaszyfrowany / odszyfrowany:");
         Label cipherText = new Label(" - pusty - ");
         TextField plainTextField = new TextField();
-        plainTextField.setPadding(new Insets(10,10,10,10));
+        plainTextField.setPadding(new Insets(10, 10, 10, 10));
         TextField keyTextField = new TextField("10");
-        keyTextField.setPadding(new Insets(10,10,10,10));
+        keyTextField.setPadding(new Insets(10, 10, 10, 10));
         keyTextField.prefWidth(50);
         HBox keyBox = new HBox();
         keyBox.setSpacing(10);
@@ -370,14 +374,14 @@ public class krypto1 extends Application {
         keyBox.getChildren().add(keyTextField);
         Button doCipher = new Button("Zaszyfruj");
         Button deCipher = new Button("Odszyfruj");
-        doCipher.setOnAction( c -> {
+        doCipher.setOnAction(c -> {
             String plainText = plainTextField.getText();
             plainText = plainText.replaceAll("\\s", "");
             int key = Integer.parseInt(keyTextField.getText());
             String cipher = SzyfrCezara(plainText, key);
             cipherText.setText(cipher);
         });
-        deCipher.setOnAction( c -> {
+        deCipher.setOnAction(c -> {
             String deCipherText = plainTextField.getText();
             deCipherText = deCipherText.replaceAll("\\s", "");
             int key = Integer.parseInt(keyTextField.getText());
@@ -399,52 +403,52 @@ public class krypto1 extends Application {
         main.getChildren().add(cipherText);
         main.getChildren().add(copy);
     }
-    
-    public String SzyfrCezara(String plainTextToCipher, int key){
+
+    public String SzyfrCezara(String plainTextToCipher, int key) {
         char[] plainText = new char[plainTextToCipher.length()];
         plainText = plainTextToCipher.toCharArray();
         StringBuilder cipher = new StringBuilder();
-        for(int i=0;i<plainText.length;i++){
-            if(Character.isUpperCase(plainText[i])){
-                char znak = (char)(((int)plainText[i] + key - 65) % 26 + 65);
+        for (int i = 0; i < plainText.length; i++) {
+            if (Character.isUpperCase(plainText[i])) {
+                char znak = (char) (((int) plainText[i] + key - 65) % 26 + 65);
                 cipher.append(znak);
             } else {
-                char znak = (char)(((int)plainText[i] + key - 97) % 26 + 97);
+                char znak = (char) (((int) plainText[i] + key - 97) % 26 + 97);
                 cipher.append(znak);
             }
         }
         return cipher.toString();
     }
-    
-    public String unSzyfrCezara(String cipherTextToDeCipher, int key){
+
+    public String unSzyfrCezara(String cipherTextToDeCipher, int key) {
         char[] cipherText = new char[cipherTextToDeCipher.length()];
         cipherText = cipherTextToDeCipher.toCharArray();
         StringBuilder plain = new StringBuilder();
-        key = 26-key;
-        for(int i=0;i<cipherText.length;i++){
-            if(Character.isUpperCase(cipherText[i])){
-                char znak = (char)(((int)cipherText[i] + key - 65) % 26 + 65);
+        key = 26 - key;
+        for (int i = 0; i < cipherText.length; i++) {
+            if (Character.isUpperCase(cipherText[i])) {
+                char znak = (char) (((int) cipherText[i] + key - 65) % 26 + 65);
                 plain.append(znak);
             } else {
-                char znak = (char)(((int)cipherText[i] + key - 97) % 26 + 97);
+                char znak = (char) (((int) cipherText[i] + key - 97) % 26 + 97);
                 plain.append(znak);
             }
         }
         return plain.toString();
     }
-    
-    public void LayoutSzyfrowanieVigenere(){
+
+    public void LayoutSzyfrowanieVigenere() {
         Label plainTextLabel = new Label("Wprowadź tekst do zaszyfrowania/odszyfrowania:");
         Label keyLabel = new Label("Podaj klucz do szyfrowania/odszyfrowania:");
         Label cipherTextLabel = new Label("Tekst w postaci zaszyfrowanej/odszyfrowanej:");
         Label cipherText = new Label(" - pusty - ");
         TextField plainTextField = new TextField();
-        plainTextField.setPadding(new Insets(10,10,10,10));
+        plainTextField.setPadding(new Insets(10, 10, 10, 10));
         TextField keyTextField = new TextField();
-        keyTextField.setPadding(new Insets(10,10,10,10));
+        keyTextField.setPadding(new Insets(10, 10, 10, 10));
         keyTextField.prefWidth(50);
         Button doCipher = new Button("Zaszyfruj");
-        doCipher.setOnAction( c -> {
+        doCipher.setOnAction(c -> {
             String plainText = plainTextField.getText();
             plainText = plainText.replaceAll("\\s", "");
             String key = keyTextField.getText();
@@ -452,7 +456,7 @@ public class krypto1 extends Application {
             cipherText.setText(cipher);
         });
         Button undoCipher = new Button("Odszyfruj");
-        undoCipher.setOnAction( c -> {
+        undoCipher.setOnAction(c -> {
             String plainText = plainTextField.getText();
             plainText = plainText.replaceAll("\\s", "");
             String key = keyTextField.getText();
@@ -468,7 +472,7 @@ public class krypto1 extends Application {
         keyBox.setAlignment(Pos.CENTER_LEFT);
         keyBox.getChildren().add(doCipher);
         keyBox.getChildren().add(undoCipher);
-        
+
         main.setOrientation(Orientation.VERTICAL);
         main.setVgap(10);
         main.getChildren().add(plainTextLabel);
@@ -480,43 +484,43 @@ public class krypto1 extends Application {
         main.getChildren().add(cipherText);
         main.getChildren().add(copy);
     }
-    
-    public String SzyfrowanieVigenere(String plainTextToCipher, String key){
+
+    public String SzyfrowanieVigenere(String plainTextToCipher, String key) {
         char[] plainText = new char[plainTextToCipher.length()];
         plainText = plainTextToCipher.toCharArray();
         StringBuilder cipher = new StringBuilder();
-        for(int i=0, j=0; i<plainText.length; i++){
-            if(Character.isUpperCase(plainText[i])){
-                char znak = (char)(((int)plainText[i] + Character.toUpperCase(key.charAt(j)) - 2 * 'A') % 26 + 'A');
+        for (int i = 0, j = 0; i < plainText.length; i++) {
+            if (Character.isUpperCase(plainText[i])) {
+                char znak = (char) (((int) plainText[i] + Character.toUpperCase(key.charAt(j)) - 2 * 'A') % 26 + 'A');
                 cipher.append(znak);
             } else {
-                char znak = (char)(((int)plainText[i] + Character.toLowerCase(key.charAt(j)) - 2 * 'a') % 26 + 'a');
+                char znak = (char) (((int) plainText[i] + Character.toLowerCase(key.charAt(j)) - 2 * 'a') % 26 + 'a');
                 cipher.append(znak);
             }
             j = ++j % key.length();
         }
-        return cipher.toString();    
-        
+        return cipher.toString();
+
     }
-    
-    public String OdszyfrowanieVigenere(String plainTextToCipher, String key){
+
+    public String OdszyfrowanieVigenere(String plainTextToCipher, String key) {
         char[] plainText = new char[plainTextToCipher.length()];
         plainText = plainTextToCipher.toCharArray();
         StringBuilder cipher = new StringBuilder();
-        for(int i=0, j=0; i<plainText.length; i++){
-            if(Character.isUpperCase(plainText[i])){
-                char znak = (char)(((int)plainText[i] - Character.toUpperCase(key.charAt(j)) + 26) % 26 + 'A');
+        for (int i = 0, j = 0; i < plainText.length; i++) {
+            if (Character.isUpperCase(plainText[i])) {
+                char znak = (char) (((int) plainText[i] - Character.toUpperCase(key.charAt(j)) + 26) % 26 + 'A');
                 cipher.append(znak);
             } else {
-                char znak = (char)(((int)plainText[i] - Character.toLowerCase(key.charAt(j)) + 26) % 26 + 'a');
+                char znak = (char) (((int) plainText[i] - Character.toLowerCase(key.charAt(j)) + 26) % 26 + 'a');
                 cipher.append(znak);
             }
             j = ++j % key.length();
         }
-        return cipher.toString();    
-        
+        return cipher.toString();
+
     }
-    
+
     public void LayoutSzyfrowanieStrumieniowe() {
         Label plainTextLabel = new Label("Podaj potęgi wielomianu 1+x+x^2+...+x^n");
         Label keyLabel = new Label("Podaj ziarno (binarnie):");
@@ -527,64 +531,76 @@ public class krypto1 extends Application {
         Label resultText = new Label("");
         Label fileNameText = new Label("");
         TextField plainTextField = new TextField();
-        plainTextField.setPadding(new Insets(10,10,10,10));
+        plainTextField.setPadding(new Insets(10, 10, 10, 10));
         TextField keyTextField = new TextField();
-        keyTextField.setPadding(new Insets(10,10,10,10));
+        keyTextField.setPadding(new Insets(10, 10, 10, 10));
         keyTextField.prefWidth(50);
-        
+
         plainTextField.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-                plainTextField.setText(newValue.replaceAll("[^\\d^\\s]", ""));
+            plainTextField.setText(newValue.replaceAll("[^\\d^\\s]", ""));      //usuwanie znaków z textFielda nie będących cyfrą lub spacją
         });
         keyTextField.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
-                keyTextField.setText(newValue.replaceAll("[^0-1]", ""));
+            keyTextField.setText(newValue.replaceAll("[^0-1]", ""));            //usuwanie znaków z textFielda nie będących 0 lub 1
         });
-                     
+
         Button openButton = new Button("Wybierz plik");
         final FileChooser fileChooser = new FileChooser();
         openButton.setOnAction(
-            new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(final ActionEvent e) {
-                    Node node = (Node) e.getSource();
-                    final Stage stage = (Stage) node.getScene().getWindow();
-                    File file = fileChooser.showOpenDialog(stage);
-                    if (file != null) {
-                        pathText.setText(file.getPath());
-                        resultText.setText("");
-                        seedText.setText("");
-                        fileNameText.setText("");
-                        polynomialText.setText("");
-                    }
+                new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(final ActionEvent e) {
+                Node node = (Node) e.getSource();
+                final Stage stage = (Stage) node.getScene().getWindow();
+                File file = fileChooser.showOpenDialog(stage);
+                if (file != null) {                                             //jeżeli wybrano jakiś plik usuń teksty z labelów
+                    pathText.setText(file.getPath());
+                    resultText.setText("");
+                    seedText.setText("");
+                    fileNameText.setText("");
+                    polynomialText.setText("");
                 }
-            });
-        Button doCipher = new Button("Szyfruj");
-        
-        doCipher.setOnAction( c -> {
-            String[] stringOfNumbers = plainTextField.getText().split("\\s");
-            StringBuilder sb = new StringBuilder();
-            Set<Integer> polynomials = new HashSet<Integer>();
-            for(String s: stringOfNumbers)
-                polynomials.add(Integer.parseInt(s));
-            polynomials.remove(0);
-            sb.append("Wielomian: 1");
-            for(int i: polynomials)
-                sb.append("+x^"+i);         
-            if(SzyfrowanieStrumieniowe(pathText.getText(), polynomials, Integer.parseInt(keyTextField.getText()))==0) {
-                resultText.setText("Szyfrowanie zakończone");
-                polynomialText.setText(sb.toString());
-                seedText.setText("Ziarno: "+keyTextField.getText());
-                Path path = Paths.get(pathText.getText());
-                fileNameText.setText("Plik wynikowy: "+path.getParent()+"/tajnyplik"+getFileExtension(path));
             }
-            else
-                resultText.setText("Szyfrowanie zakończone niepowodzeniem");
+        });
+        Button doCipher = new Button("Szyfruj");
+
+        doCipher.setOnAction(c -> {
+            if (keyTextField.getText().equals("") || plainTextField.getText().equals("") || pathText.getText().equals("")) {    //jeżeli nie podano wszystkich danych wypisz komunikat
+                resultText.setText("Uzupełnij dane!");
+            } else {
+                String str = plainTextField.getText().replaceFirst("^ *", "");          //usuń pierwsze wystąpienia spacji
+                String[] stringOfNumbers = str.split("\\s{1,}");                        //utwórz tablicę numerów podzielonych conajmniej jedną spacją
+                StringBuilder sb = new StringBuilder();                                 //potrzebny do wypisania wielomianu
+                TreeSet<Integer> polynomials = new TreeSet<Integer>();                  //TreeSet do pozbycia się powtórzeń i posortowania potęg wielomianu
+                try {
+                    for (String s : stringOfNumbers) {                                  
+                        polynomials.add(Integer.parseInt(s));                           //zamień stringi na inty
+                    }
+                } catch (NumberFormatException e) {
+                    resultText.setText("Za duża potęga wielomianu!");                   //jeżeli przekroczono zakres inta wyświetl komunikat
+                    return;
+                }
+                polynomials.remove(0);                                                  //usuń ewentualną 0 potęgę
+                sb.append("Wielomian: 1");                                              //budowa stringa do wyświetlenia wielomianu
+                for (int i : polynomials) {
+                    sb.append("+x^" + i);
+                }
+                if (SzyfrowanieStrumieniowe(pathText.getText(), polynomials, Integer.parseInt(keyTextField.getText())) == 0) { //jeżeli zwrócono 0 operacja szyfrowania powiodła się
+                    resultText.setText("Szyfrowanie zakończone");                       //wypisanie komunikatów
+                    polynomialText.setText(sb.toString());
+                    seedText.setText("Ziarno: " + keyTextField.getText());
+                    Path path = Paths.get(pathText.getText());
+                    fileNameText.setText("Plik wynikowy: " + path.getParent() + "/tajnyplik" + getFileExtension(path));
+                } else {
+                    resultText.setText("Szyfrowanie zakończone niepowodzeniem");        //operacja szyfrowania nie powiodła się
+                }
+            }
         });
         HBox keyBox = new HBox();
         keyBox.setSpacing(10);
         keyBox.setAlignment(Pos.CENTER_LEFT);
         keyBox.getChildren().add(openButton);
         keyBox.getChildren().add(doCipher);
-        
+
         main.setOrientation(Orientation.VERTICAL);
         main.setVgap(10);
         main.getChildren().add(plainTextLabel);
@@ -600,58 +616,51 @@ public class krypto1 extends Application {
         main.getChildren().add(fileNameText);
 
     }
-   
-    public int SzyfrowanieStrumieniowe(String stringPath, Set<Integer> polynomial, int seed) {
-        Path path = Paths.get(stringPath);
+
+    public int SzyfrowanieStrumieniowe(String stringPath, TreeSet<Integer> polynomial, int seed) {
+        Path path = Paths.get(stringPath);                              //budowa ścieżki do pliku
         try {
             byte byteArray[] = Files.readAllBytes(path);                //wczytanie pliku jako tablicy bajtów
             BitSet polynomialBitSet = new BitSet();
-            BitSet seedBitSet = convert(seed);
-            int max = 0;
-            for(int i: polynomial) {
-                if(i>max)
-                    max = i;
-            }
-            for(int i: polynomial) {
-                polynomialBitSet.set(max-i);
-            }
-            LFSR lfsr = new LFSR(seedBitSet,polynomialBitSet);
+            BitSet seedBitSet = convert(seed);                          //konwersja inta na BitSet
 
-            for(int i=0; i<byteArray.length; i++)
-                byteArray[i]^=lfsr.getNextByte();
-            FileOutputStream fos = new FileOutputStream(path.getParent()+"/tajnyplik"+getFileExtension(path));
-            fos.write(byteArray);            
-            
+            for (int i : polynomial) {                                  //konwersja wielomianu na BitSet
+                polynomialBitSet.set(polynomial.last() - i);            //odjęcie od wartości maksymalnej wartości liczby tak aby najwyższa potęga była bitem na pozycji 0
+            }
+            LFSR lfsr = new LFSR(seedBitSet, polynomialBitSet);         //inicjalizacja algorytmu LFSR
+
+            for (int i = 0; i < byteArray.length; i++) {                //dla każdego bajtu z wczytanego pliku
+                byteArray[i] ^= lfsr.getNextByte();                     //XORuj z kolejnym wygenerowanym bajtem przez algorytm
+            }
+            FileOutputStream fos = new FileOutputStream(path.getParent() + "/tajnyplik" + getFileExtension(path));  //ścieżka do pliku oryginalnego i zmiana nazwy pliku na tajnyplik + rozszerzenie oryginału
+            fos.write(byteArray);                                       //zapisanie strumienia bajtów
+
         } catch (IOException ex) {
             return -1;
         }
         return 0;
     }
-    
-    public static BitSet convert(int value) {
-    BitSet bits = new BitSet();
-    int index = 0;
-    while (value != 0) {
-      if (value % 10 != 0) {
-        bits.set(index);
-      }
-      ++index;
-      value/= 10;
-    }
-    return bits;
-  }
-    
-    
 
-    private String getFileExtension(Path path) {
+    public static BitSet convert(int value) {                           //konwersja inta złożonego z 0 i 1 do BitSetu
+        BitSet bits = new BitSet();
+        int index = 0;
+        while (value != 0) {
+            if (value % 10 != 0) {                                      
+                bits.set(index);
+            }
+            ++index;
+            value /= 10;
+        }
+        return bits;
+    }
+
+    private String getFileExtension(Path path) {                        //zwrócenie rosrzerzenia pliku
         String name = path.getFileName().toString();
         int lastIndexOf = name.lastIndexOf(".");
         if (lastIndexOf == -1) {
-            return ""; 
+            return "";
         }
-    return name.substring(lastIndexOf);
-}
+        return name.substring(lastIndexOf);
+    }
 
-
-    
 }
