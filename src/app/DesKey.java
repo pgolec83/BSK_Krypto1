@@ -16,6 +16,10 @@ public class DesKey {
     private int[] pc1;                  //permutacja PC1
     private int[] pc2;                  //permutacja PC2
     private int[] shifts;               //tablica przesuniec blokow Cn i Dn
+    
+    public BitSet[] getK() {
+        return k;
+    }
 
     public DesKey(BitSet key) {
         this.key = key;
@@ -65,8 +69,8 @@ public class DesKey {
         pw.println("Klucz po permutacji pc1:");
         logPrintBitSet(tmp,pw,56);                             //zapis klucza po permutacji
 
-        BitSet d = tmp.get(0,27);                                   //blok d jest blokiem mniej znaczacych bitow
-        BitSet c = tmp.get(28,55);                                  //blok c jest blokiem bardziej znaczacych bitow
+        BitSet d = tmp.get(0,28);                                   //blok d jest blokiem mniej znaczacych bitow
+        BitSet c = tmp.get(28,56);                                  //blok c jest blokiem bardziej znaczacych bitow
 
         pw.println("c0:");                                          //wypisanie blokow c i d
         logPrintBitSet(c,pw,28);
@@ -137,7 +141,7 @@ public class DesKey {
         return tmp;
     }
 
-    private void logPrintNumbers(int numbers, PrintWriter pw) {         //wypisywanie numerow od 1 do numbers do logu
+    public void logPrintNumbers(int numbers, PrintWriter pw) {         //wypisywanie numerow od 1 do numbers do logu
         for(int i=1; i<=numbers; i++) {
             if(i<10) {
                 pw.print("| " + i);
@@ -149,7 +153,7 @@ public class DesKey {
         pw.println();
     }
 
-    private void logPrintBitSet(BitSet bitSet, PrintWriter pw, int bits) {  //wypisywanie ciagow bitow do logu o zadanej wielkosci
+    public void logPrintBitSet(BitSet bitSet, PrintWriter pw, int bits) {  //wypisywanie ciagow bitow do logu o zadanej wielkosci
         for(int i=bits-1; i>=0; i--) {
             if(bitSet.get(i)) {
                 pw.print("| 1");
