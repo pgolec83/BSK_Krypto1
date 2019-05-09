@@ -206,6 +206,111 @@ public class DesEncryption {
         pw.close();
         return convert(block);
     }
+    
+    public long unencrypt(BitSet block) {
+        BitSet tmp = new BitSet(64);
+
+        FileWriter fileWriter = null;                                       //do zapisu kolejnych operacji algorytmu
+        try {
+            fileWriter = new FileWriter("log.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        PrintWriter pw = new PrintWriter(fileWriter);
+        desKey.logPrintNumbers(64,pw);                             //wypisanie numerow 1-64 dla poprawy widoczonsci logu
+        pw.println("Początkowy blok:");
+        desKey.logPrintBitSet(block,pw,64);
+
+        for(int i=63; i>=0; i--) {                                  //premutacja IP bloku danych, zaczynamy od 63 a nie od 0 bo w dokumentacji numerowanie jest odwrotne niz w BitSet-cie
+            if(block.get(64-IP[63-i]))                              //np dla i=0 IP[63]->58, 64-58->6 czyli 7 bit liczac od prawej do lewej a 58 bit liczac od lewej do prawej ktorego wartosc ustalana jest na najbardziej znaczacym bicie
+                tmp.set(i);
+            else
+                tmp.clear(i);
+        }
+
+        pw.println("Blok po permutacji IP:");
+        desKey.logPrintBitSet(tmp,pw,64);
+
+        BitSet r = tmp.get(0,32);                                   //blok p jest blokiem mniej znaczacych bitow
+        BitSet l = tmp.get(32,64);                                  //blok l jest blokiem bardziej znaczacych bitow
+
+        pw.println("l:");                                          //wypisanie blokow c i d
+        desKey.logPrintBitSet(l,pw,32);
+        pw.println("r:");
+        desKey.logPrintBitSet(r,pw,32);
+
+        for(int j = 0; j<16; j++) {                                 //pętla 16 operacji z kluczem
+
+            BitSet rTo48Bits = new BitSet(48);
+            BitSet finalChanged = new BitSet();
+
+            for (int i = 47; i >= 0; i--) {                         //permutacja E bloku Rj
+                if (r.get(32 - E[47 - i]))
+                    rTo48Bits.set(i);
+                else
+                    rTo48Bits.clear(i);
+            }
+
+            pw.println();
+            desKey.logPrintNumbers(48,pw);
+            pw.println("Permutacja E bloku R"+j);
+            desKey.logPrintBitSet(rTo48Bits,pw,48);
+
+            rTo48Bits.xor(desKey.getK()[15-j]);                        //xorowanie bloku Rj z kluczem Kj
+            pw.println("Klucz K"+(j+1));
+            desKey.logPrintBitSet(desKey.getK()[15-j],pw,48);
+            pw.println("Wynik XOR");
+            desKey.logPrintBitSet(rTo48Bits,pw,48);
+            pw.println();
+            desKey.logPrintNumbers(32,pw);
+            BitSet changed = changeBitsBySTable(rTo48Bits);         //zamiana bitow wg tabel S1-S8
+            pw.println("Zmiana po tabelach S:");
+            desKey.logPrintBitSet(changed,pw,32);
+
+
+            for(int i=31; i>=0; i--) {
+                if(changed.get(32-P[31-i]))
+                    finalChanged.set(i);
+                else
+                    finalChanged.clear(i);
+            }
+
+            pw.println("Permutacja P");
+            desKey.logPrintBitSet(finalChanged,pw,32);
+
+
+            pw.println();
+            desKey.logPrintNumbers(32,pw);
+            finalChanged.xor(l);
+            l = r;
+            r = finalChanged;
+            pw.println("Nowe L:");
+            desKey.logPrintBitSet(l,pw,32);
+            pw.println("Nowe R:");
+            desKey.logPrintBitSet(r,pw,32);
+
+        }
+
+        tmp = merge(r,l);
+
+        desKey.logPrintNumbers(64,pw);
+        pw.println("Finalne scalenie:");
+        desKey.logPrintBitSet(tmp,pw,64);
+
+        for(int i=63; i>=0; i--) {
+            if(tmp.get(64-invertedIP[63-i]))
+                block.set(i);
+            else
+                block.clear(i);
+        }
+
+        pw.println("Permutacja Inverse IP:");
+        desKey.logPrintBitSet(block,pw,64);
+
+        pw.close();
+        return convert(block);
+    }
 
     private BitSet changeBitsBySTable(BitSet bitSet) {
         int row, col;

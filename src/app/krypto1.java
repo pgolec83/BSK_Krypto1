@@ -715,11 +715,16 @@ public class krypto1 extends Application {
             }
         });
         Button doCipher = new Button("Szyfruj");
+        Button undoCipher = new Button("Odszyfruj");
 
         doCipher.setOnAction(c -> {
             if (keyTextField.getText().equals("") || pathText.getText().equals("")) {    //jeżeli nie podano wszystkich danych wypisz komunikat
                 resultText.setText("Uzupełnij dane!");
-            } else {
+            }
+            else if (keyTextField.getText().length()>8){
+                    resultText.setText("Klucz max 64 bitowy!!!");
+                    }
+            else {
                 
 
                 if (szyfrowanieDES(pathText.getText(),Integer.parseInt(keyTextField.getText(),16)) == 0) { //jeżeli zwrócono 0 operacja szyfrowania powiodła się
@@ -732,11 +737,34 @@ public class krypto1 extends Application {
                 }
             }
         });
+        
+        undoCipher.setOnAction(c -> {
+            if (keyTextField.getText().equals("") || pathText.getText().equals("")) {    //jeżeli nie podano wszystkich danych wypisz komunikat
+                resultText.setText("Uzupełnij dane!");
+            }
+            else if (keyTextField.getText().length()>8){
+                    resultText.setText("Klucz max 64 bitowy!!!");
+                    }
+                else {
+                
+
+                if (odszyfrowanieDES(pathText.getText(),Integer.parseInt(keyTextField.getText(),16)) == 0) { //jeżeli zwrócono 0 operacja szyfrowania powiodła się
+                    resultText.setText("Odszyfrowanie zakończone");                       //wypisanie komunikatów
+                    seedText.setText("Klucz: " + keyTextField.getText());
+                    Path path = Paths.get(pathText.getText());
+                    fileNameText.setText("Plik wynikowy: " + path.getParent() + "/odtajnionyplik" + getFileExtension(path));
+                } else {
+                    resultText.setText("Szyfrowanie zakończone niepowodzeniem");        //operacja szyfrowania nie powiodła się
+                }
+            }
+        });
+        
         HBox keyBox = new HBox();
         keyBox.setSpacing(10);
         keyBox.setAlignment(Pos.CENTER_LEFT);
         keyBox.getChildren().add(openButton);
         keyBox.getChildren().add(doCipher);
+        keyBox.getChildren().add(undoCipher);
 
         main.setOrientation(Orientation.VERTICAL);
         main.setVgap(10);
@@ -795,6 +823,51 @@ public class krypto1 extends Application {
             
             FileOutputStream fos = new FileOutputStream(path.getParent() + "/tajnyplik" + getFileExtension(path));  //ścieżka do pliku oryginalnego i zmiana nazwy pliku na tajnyplik + rozszerzenie oryginału
             fos.write(extraByteArray);                                       //zapisanie strumienia bajtów
+
+        } catch (IOException ex) {
+            return -1;
+        }
+        return 0;
+    }
+    
+    private int odszyfrowanieDES(String stringPath, int key){
+        Path path = Paths.get(stringPath);                              //budowa ścieżki do pliku
+        try {
+            byte byteArray[] = Files.readAllBytes(path);                //wczytanie pliku jako tablicy bajtów
+            BitSet keyBitSet = convert(key);                            //konwersja inta na BitSet
+            
+            DesEncryption des = new DesEncryption(keyBitSet);
+            BitSet a,b,c,d,e,f,g,h;
+            BitSet block;
+            long longArray[] = new long[byteArray.length/8];
+            
+            for(int i=0,j=0; i< byteArray.length; i+=8,j++){
+                a = des.convert(byteArray[i]);
+                b = des.convert(byteArray[i+1]);
+                c = des.convert(byteArray[i+2]);
+                d = des.convert(byteArray[i+3]);
+                e = des.convert(byteArray[i+4]);
+                f = des.convert(byteArray[i+5]);
+                g = des.convert(byteArray[i+6]);
+                h = des.convert(byteArray[i+7]);
+                block = mergeAll(a,b,c,d,e,f,g,h);
+                longArray[j] = des.unencrypt(block);
+            }
+            
+            for(int i=0; i<longArray.length; i++) {
+                byte[] bytes = ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(longArray[i]).array();
+                for(int j=0; j<8; j++) {
+                    byteArray[(8*i)+j] = bytes[j];
+                }
+            }
+            
+            int superBytes = byteArray[byteArray.length-1];
+            byte originalByteArray[] = new byte[byteArray.length-(8-superBytes)-8];
+            System.arraycopy(byteArray, 0, originalByteArray, 0, originalByteArray.length);
+            
+            
+            FileOutputStream fos = new FileOutputStream(path.getParent() + "/odtajnionyplik" + getFileExtension(path));  //ścieżka do pliku oryginalnego i zmiana nazwy pliku na tajnyplik + rozszerzenie oryginału
+            fos.write(originalByteArray);                                       //zapisanie strumienia bajtów
 
         } catch (IOException ex) {
             return -1;
