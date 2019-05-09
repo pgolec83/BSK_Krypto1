@@ -363,7 +363,7 @@ public class DesEncryption {
         return value;
     }
 
-    public static BitSet convert(int value) {
+    public static BitSet convert(long value) {
         BitSet bits = new BitSet();
         int index = 0;
         while (value != 0) {

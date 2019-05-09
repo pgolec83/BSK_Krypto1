@@ -640,7 +640,7 @@ public class krypto1 extends Application {
         try {
             byte byteArray[] = Files.readAllBytes(path);                //wczytanie pliku jako tablicy bajtów
             BitSet polynomialBitSet = new BitSet();
-            BitSet seedBitSet = convert(seed);                          //konwersja inta na BitSet
+            BitSet seedBitSet = convertStrumieniowe(seed);                          //konwersja inta na BitSet
 
             for (int i : polynomial) {                                  //konwersja wielomianu na BitSet
                 polynomialBitSet.set(polynomial.last() - i);            //odjęcie od wartości maksymalnej wartości liczby tak aby najwyższa potęga była bitem na pozycji 0
@@ -659,7 +659,7 @@ public class krypto1 extends Application {
         return 0;
     }
 
-    public static BitSet convert(int value) {                           //konwersja inta złożonego z 0 i 1 do BitSetu
+    public static BitSet convertStrumieniowe(int value) {                           //konwersja inta złożonego z 0 i 1 do BitSetu
         BitSet bits = new BitSet();
         int index = 0;
         while (value != 0) {
@@ -721,13 +721,13 @@ public class krypto1 extends Application {
             if (keyTextField.getText().equals("") || pathText.getText().equals("")) {    //jeżeli nie podano wszystkich danych wypisz komunikat
                 resultText.setText("Uzupełnij dane!");
             }
-            else if (keyTextField.getText().length()>8){
+            else if (keyTextField.getText().length()>16){
                     resultText.setText("Klucz max 64 bitowy!!!");
                     }
             else {
                 
 
-                if (szyfrowanieDES(pathText.getText(),Integer.parseInt(keyTextField.getText(),16)) == 0) { //jeżeli zwrócono 0 operacja szyfrowania powiodła się
+                if (szyfrowanieDES(pathText.getText(),Long.parseUnsignedLong(keyTextField.getText(),16)) == 0) { //jeżeli zwrócono 0 operacja szyfrowania powiodła się
                     resultText.setText("Szyfrowanie zakończone");                       //wypisanie komunikatów
                     seedText.setText("Klucz: " + keyTextField.getText());
                     Path path = Paths.get(pathText.getText());
@@ -742,13 +742,13 @@ public class krypto1 extends Application {
             if (keyTextField.getText().equals("") || pathText.getText().equals("")) {    //jeżeli nie podano wszystkich danych wypisz komunikat
                 resultText.setText("Uzupełnij dane!");
             }
-            else if (keyTextField.getText().length()>8){
+            else if (keyTextField.getText().length()>16){
                     resultText.setText("Klucz max 64 bitowy!!!");
                     }
                 else {
                 
 
-                if (odszyfrowanieDES(pathText.getText(),Integer.parseInt(keyTextField.getText(),16)) == 0) { //jeżeli zwrócono 0 operacja szyfrowania powiodła się
+                if (odszyfrowanieDES(pathText.getText(),Long.parseUnsignedLong(keyTextField.getText(),16)) == 0) { //jeżeli zwrócono 0 operacja szyfrowania powiodła się
                     resultText.setText("Odszyfrowanie zakończone");                       //wypisanie komunikatów
                     seedText.setText("Klucz: " + keyTextField.getText());
                     Path path = Paths.get(pathText.getText());
@@ -779,11 +779,13 @@ public class krypto1 extends Application {
 
     }
     
-    private int szyfrowanieDES(String stringPath, int key){
+    private int szyfrowanieDES(String stringPath, long key){
+        System.out.println("key="+key);
         Path path = Paths.get(stringPath);                              //budowa ścieżki do pliku
         try {
             byte byteArray[] = Files.readAllBytes(path);                //wczytanie pliku jako tablicy bajtów
-            BitSet keyBitSet = convert(key);                            //konwersja inta na BitSet
+            BitSet keyBitSet = DesEncryption.convert(key);                            //konwersja inta na BitSet
+            System.out.println("bitset"+keyBitSet);
             
             
             int superBytes = byteArray.length%8;
@@ -830,11 +832,11 @@ public class krypto1 extends Application {
         return 0;
     }
     
-    private int odszyfrowanieDES(String stringPath, int key){
+    private int odszyfrowanieDES(String stringPath, long key){
         Path path = Paths.get(stringPath);                              //budowa ścieżki do pliku
         try {
             byte byteArray[] = Files.readAllBytes(path);                //wczytanie pliku jako tablicy bajtów
-            BitSet keyBitSet = convert(key);                            //konwersja inta na BitSet
+            BitSet keyBitSet = DesEncryption.convert(key);                            //konwersja inta na BitSet
             
             DesEncryption des = new DesEncryption(keyBitSet);
             BitSet a,b,c,d,e,f,g,h;
