@@ -49,7 +49,7 @@ public class DesKey {
 
         FileWriter fileWriter = null;                                 //do zapisu kolejnych operacji algorytmu
         try {
-            fileWriter = new FileWriter("log.txt");
+            fileWriter = new FileWriter("key.txt");
         } catch (IOException e) {
             e.printStackTrace();
         }

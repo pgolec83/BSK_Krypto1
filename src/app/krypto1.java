@@ -1,8 +1,11 @@
 package app;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -43,6 +46,7 @@ public class krypto1 extends Application {
         MenuBar menubar = new MenuBar();
         Menu menu1 = new Menu("PS2");
         Menu menu2 = new Menu("PS3");
+        Menu menu3 = new Menu("PS4");
         MenuItem menuitem1 = new MenuItem("Rail fence");
         // akcja po wybraniu elementu 1 menu
         menuitem1.setOnAction(e -> {
@@ -95,13 +99,27 @@ public class krypto1 extends Application {
             LayoutSzyfrowanieStrumieniowe();
         });
 
+        MenuItem menuitem6 = new MenuItem("DES");
+        // akcja po wybraniu elementu 6 menu
+        menuitem6.setOnAction(e -> {
+            primaryStage.setTitle(mainTitle + " - DES");
+            if (!main.getChildren().isEmpty()) {
+                main.getChildren().clear();
+            }
+            // tworzenie layoutu do zadania
+            LayoutDES();
+        });
+        
+        
         menu1.getItems().add(menuitem1);
         menu1.getItems().add(menuitem2);
         menu1.getItems().add(menuitem3);
         menu1.getItems().add(menuitem4);
         menu2.getItems().add(menuitem5);
+        menu3.getItems().add(menuitem6);
         menubar.getMenus().add(menu1);
         menubar.getMenus().add(menu2);
+        menubar.getMenus().add(menu3);
 
         // główny layout aplikacji z implementacją menu
         VBox root = new VBox(menubar);
@@ -663,4 +681,163 @@ public class krypto1 extends Application {
         return name.substring(lastIndexOf);
     }
 
+    private void LayoutDES(){
+        Label keyLabel = new Label("Podaj klucz 64bit (szestnastkowo):");
+        Label cipherText = new Label("Plik do zaszyfrowania:");
+        Label pathText = new Label("");
+        //Label polynomialText = new Label("");
+        Label seedText = new Label("");
+        Label resultText = new Label("");
+        Label fileNameText = new Label("");
+        TextField keyTextField = new TextField();
+        keyTextField.setPadding(new Insets(10, 10, 10, 10));
+        keyTextField.prefWidth(50);
+
+        keyTextField.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
+            keyTextField.setText(newValue.replaceAll("[^0-9a-fA-F]", ""));            //usuwanie znaków z textFielda nie będących znakiem szestnastkowym
+        });
+
+        Button openButton = new Button("Wybierz plik");
+        final FileChooser fileChooser = new FileChooser();
+        openButton.setOnAction(
+                new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(final ActionEvent e) {
+                Node node = (Node) e.getSource();
+                final Stage stage = (Stage) node.getScene().getWindow();
+                File file = fileChooser.showOpenDialog(stage);
+                if (file != null) {                                             //jeżeli wybrano jakiś plik usuń teksty z labelów
+                    pathText.setText(file.getPath());
+                    resultText.setText("");
+                    seedText.setText("");
+                    fileNameText.setText("");
+                }
+            }
+        });
+        Button doCipher = new Button("Szyfruj");
+
+        doCipher.setOnAction(c -> {
+            if (keyTextField.getText().equals("") || pathText.getText().equals("")) {    //jeżeli nie podano wszystkich danych wypisz komunikat
+                resultText.setText("Uzupełnij dane!");
+            } else {
+                
+
+                if (szyfrowanieDES(pathText.getText(),Integer.parseInt(keyTextField.getText(),16)) == 0) { //jeżeli zwrócono 0 operacja szyfrowania powiodła się
+                    resultText.setText("Szyfrowanie zakończone");                       //wypisanie komunikatów
+                    seedText.setText("Klucz: " + keyTextField.getText());
+                    Path path = Paths.get(pathText.getText());
+                    fileNameText.setText("Plik wynikowy: " + path.getParent() + "/tajnyplik" + getFileExtension(path));
+                } else {
+                    resultText.setText("Szyfrowanie zakończone niepowodzeniem");        //operacja szyfrowania nie powiodła się
+                }
+            }
+        });
+        HBox keyBox = new HBox();
+        keyBox.setSpacing(10);
+        keyBox.setAlignment(Pos.CENTER_LEFT);
+        keyBox.getChildren().add(openButton);
+        keyBox.getChildren().add(doCipher);
+
+        main.setOrientation(Orientation.VERTICAL);
+        main.setVgap(10);
+        main.getChildren().add(keyLabel);
+        main.getChildren().add(keyTextField);
+        main.getChildren().add(keyBox);
+        main.getChildren().add(resultText);
+        main.getChildren().add(cipherText);
+        main.getChildren().add(pathText);
+        main.getChildren().add(seedText);
+        main.getChildren().add(fileNameText);
+
+    }
+    
+    private int szyfrowanieDES(String stringPath, int key){
+        Path path = Paths.get(stringPath);                              //budowa ścieżki do pliku
+        try {
+            byte byteArray[] = Files.readAllBytes(path);                //wczytanie pliku jako tablicy bajtów
+            BitSet keyBitSet = convert(key);                            //konwersja inta na BitSet
+            
+            
+            int superBytes = byteArray.length%8;
+            byte extraByteArray[] = new byte[byteArray.length+(8-superBytes)+8];
+            System.arraycopy(byteArray, 0, extraByteArray, 0, byteArray.length);
+            
+            
+            for(int i=byteArray.length; i<superBytes+7; i++){
+                extraByteArray[i] = 0;
+            }
+            extraByteArray[extraByteArray.length-1] = (byte) superBytes;
+            DesEncryption des = new DesEncryption(keyBitSet);
+            BitSet a,b,c,d,e,f,g,h;
+            BitSet block;
+            long longArray[] = new long[extraByteArray.length/8];
+            
+            for(int i=0,j=0; i< extraByteArray.length; i+=8,j++){
+                a = des.convert(extraByteArray[i]);
+                b = des.convert(extraByteArray[i+1]);
+                c = des.convert(extraByteArray[i+2]);
+                d = des.convert(extraByteArray[i+3]);
+                e = des.convert(extraByteArray[i+4]);
+                f = des.convert(extraByteArray[i+5]);
+                g = des.convert(extraByteArray[i+6]);
+                h = des.convert(extraByteArray[i+7]);
+                block = mergeAll(a,b,c,d,e,f,g,h);
+                longArray[j] = des.encrypt(block);
+            }
+            
+            for(int i=0; i<longArray.length; i++) {
+                byte[] bytes = ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(longArray[i]).array();
+                for(int j=0; j<8; j++) {
+                    extraByteArray[(8*i)+j] = bytes[j];
+                }
+            }
+                     
+            
+            FileOutputStream fos = new FileOutputStream(path.getParent() + "/tajnyplik" + getFileExtension(path));  //ścieżka do pliku oryginalnego i zmiana nazwy pliku na tajnyplik + rozszerzenie oryginału
+            fos.write(extraByteArray);                                       //zapisanie strumienia bajtów
+
+        } catch (IOException ex) {
+            return -1;
+        }
+        return 0;
+    }
+    
+    private BitSet mergeAll(BitSet a,BitSet b,BitSet c,BitSet d,BitSet e,BitSet f,BitSet g,BitSet h) {
+        BitSet ret = new BitSet(64);
+        for(int i=0; i<8; i++){
+            if(a.get(i))
+                ret.set(56+i);
+            else
+                ret.clear(56+i);
+            if(b.get(i))
+                ret.set(48+i);
+            else
+                ret.clear(48+i);
+            if(c.get(i))
+                ret.set(40+i);
+            else
+                ret.clear(40+i);
+            if(d.get(i))
+                ret.set(32+i);
+            else
+                ret.clear(32+i);
+            if(e.get(i))
+                ret.set(24+i);
+            else
+                ret.clear(24+i);
+            if(f.get(i))
+                ret.set(16+i);
+            else
+                ret.clear(16+i);
+            if(g.get(i))
+                ret.set(8+i);
+            else
+                ret.clear(8+i);
+            if(h.get(i))
+                ret.set(i);
+            else
+                ret.clear(i);
+        }
+        return ret;
+    }
 }

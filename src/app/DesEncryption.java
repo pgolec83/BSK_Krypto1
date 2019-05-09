@@ -250,7 +250,7 @@ public class DesEncryption {
     }
 
 
-    private static long convert(BitSet bits) {
+    public static long convert(BitSet bits) {
         long value = 0L;
         for (int i = 0; i < bits.length(); ++i) {
             value += bits.get(i) ? (1L << i) : 0L;
@@ -258,7 +258,7 @@ public class DesEncryption {
         return value;
     }
 
-    private static BitSet convert(int value) {
+    public static BitSet convert(int value) {
         BitSet bits = new BitSet();
         int index = 0;
         while (value != 0) {
