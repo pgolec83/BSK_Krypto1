@@ -107,7 +107,7 @@ public class DesEncryption {
 
         FileWriter fileWriter = null;                                       //do zapisu kolejnych operacji algorytmu
         try {
-            fileWriter = new FileWriter("log.txt");
+            fileWriter = new FileWriter("log.txt",true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -212,7 +212,7 @@ public class DesEncryption {
 
         FileWriter fileWriter = null;                                       //do zapisu kolejnych operacji algorytmu
         try {
-            fileWriter = new FileWriter("log.txt");
+            fileWriter = new FileWriter("log.txt",true);
         } catch (IOException e) {
             e.printStackTrace();
         }
